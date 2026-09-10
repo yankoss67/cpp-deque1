@@ -3,10 +3,6 @@
 #include "algo.h"
 
 #include <deque>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QFile>
-#include <QTextStream>
 #include <algorithm>
 #include <random>
 #include <string>
@@ -52,7 +48,6 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-
 void MainWindow::SetRandomGen(const std::mt19937& random_gen) {
     random_gen_ = random_gen;
 }
@@ -63,7 +58,7 @@ void MainWindow::ApplyModel() {
     if (deque_model_.iterator != deque_model_.items.end()) {
         index_tmp = std::distance(deque_model_.items.begin(), deque_model_.iterator);
     }
-    
+
     ui->list_widget->clear();
     for (size_t i = 0; i < deque_model_.items.size(); ++i) {
         ui->list_widget->addItem(QString::number(i) + ": " +
@@ -71,7 +66,7 @@ void MainWindow::ApplyModel() {
     }
     ui->list_widget->addItem("end");
     ui->txt_size->setText(QString::number(deque_model_.items.size()));
-    
+
     // Восстанавливаем ПОЗИЦИЮ (индекс)
     if (index_tmp >= 0 && index_tmp < static_cast<int>(deque_model_.items.size())) {
         deque_model_.iterator = deque_model_.items.begin() + index_tmp;
@@ -80,13 +75,13 @@ void MainWindow::ApplyModel() {
     } else {
         deque_model_.iterator = deque_model_.items.end();
     }
-    
+
     bool is_empty = deque_model_.items.empty();
     ui->btn_pop_back->setDisabled(is_empty);
     ui->btn_pop_front->setDisabled(is_empty);
     ui->btn_erase->setDisabled(is_empty);
     ui->btn_edit->setDisabled(is_empty);
-    
+
     ApplyIterator();
 }
 
@@ -109,6 +104,7 @@ void MainWindow::ApplyIterator() {
     ui->btn_erase->setDisabled(disabled);
     ui->btn_edit->setDisabled(disabled);
 }
+
 // ==================== МЕТОДЫ ДЕКА ====================
 
 void MainWindow::on_btn_push_back_clicked() {
@@ -142,6 +138,7 @@ void MainWindow::on_btn_pop_back_clicked() {
         ApplyIterator();
     }
 }
+
 void MainWindow::on_btn_pop_front_clicked() {
     if (!deque_model_.items.empty()) {
         deque_model_.items.pop_front();
@@ -314,10 +311,7 @@ void MainWindow::on_btn_merge_sort_clicked() {
         return;
     }
 
-    deque_model_.items = MergeSort(deque_model_.items,
-                                   [](const std::string& a, const std::string& b) {
-                                       return a < b;
-                                   });
+    deque_model_.items = MergeSort(deque_model_.items, std::less<>{});
 
     deque_model_.iterator = deque_model_.items.begin();
     ApplyModel();
@@ -341,11 +335,11 @@ void MainWindow::on_btn_merge_sort_case_insensitive_clicked() {
 
 void MainWindow::on_btn_shuffle_clicked() {
     if (deque_model_.items.empty()) return;
-    
+
     std::vector<std::string> temp(deque_model_.items.begin(), deque_model_.items.end());
     std::shuffle(temp.begin(), temp.end(), random_gen_);
     deque_model_.items.assign(temp.begin(), temp.end());
-    
+
     ApplyModel();
 }
 
@@ -362,15 +356,15 @@ void MainWindow::on_btn_unique_clicked() {
     deque_model_.items.erase(new_end, deque_model_.items.end());
 
     deque_model_.iterator = deque_model_.items.begin();
-    
+
     ApplyModel();
 }
 
 void MainWindow::on_btn_reverse_clicked() {
     if (deque_model_.items.empty()) return;
-    
+
     std::reverse(deque_model_.items.begin(), deque_model_.items.end());
-    
+
     ApplyModel();
 }
 
